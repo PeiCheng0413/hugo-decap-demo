@@ -6,9 +6,5 @@
 # macOS
 .DS_Store
 
-# Cloudflare Worker
-/oauth-proxy/node_modules/
-/oauth-proxy/.wrangler/
-
-# Go
+# OAuth 中繼站（Go）建置產物
 /oauth-proxy/oauth-proxy
