@@ -39,44 +39,44 @@ hugo server
 
 `static/admin/config.yml` 裡的 `local_backend: true` 就是打開這個模式用的。
 
-## 上線狀態
+## 上線狀態（全部就緒）
 
-- 網站：<https://peicheng0413.github.io/hugo-decap-demo/> ← 已上線，push 到 main 就自動重建
-- 後台：<https://peicheng0413.github.io/hugo-decap-demo/admin/> ← 要能登入，還差下面兩步
-
-### 還沒完成的兩步（讓 /admin 可以用 GitHub 登入）
-
-**1. 建 GitHub OAuth App**
-
-Settings → Developer settings → OAuth Apps → New OAuth App，填：
-
-| 欄位 | 值 |
+| 項目 | 網址 |
 |---|---|
-| Application name | 隨便，例如 `Decap CMS - hugo-decap-demo` |
-| Homepage URL | `https://peicheng0413.github.io/hugo-decap-demo/` |
-| Authorization callback URL | `https://peicheng-decap-oauth.fly.dev/callback` |
+| 網站 | <https://peicheng0413.github.io/hugo-decap-demo/> |
+| 內容後台 | <https://peicheng0413.github.io/hugo-decap-demo/admin/> |
+| OAuth 中繼站 | <https://peicheng-decap-oauth.fly.dev>（fly.io，nrt，閒置自動關機） |
 
-建完按 **Generate a new client secret**，client ID 與 secret 留著下一步用。
+在 `/admin/` 用 GitHub 登入後編輯內容，存檔會直接 commit 進 main，
+GitHub Actions 接手重建，約一分鐘後線上就更新了。
 
-**2. 部署 OAuth 中繼站到 fly.io**
+### 各部分怎麼接起來的
 
-Decap 用 GitHub 登入時，最後一步要拿 client secret 去換 token，這不能在瀏覽器做，所以需要一個小後端。
-`oauth-proxy/` 就是它：Go 寫的單一 binary，沒有資料庫，閒置會自動關機（`min_machines_running = 0`）。
+1. **網站**：push 到 main → `.github/workflows/deploy.yml` 用 Hugo extended 建置 → 發布到 GitHub Pages。
+2. **後台**：`static/admin/` 是純靜態頁，Decap CMS 從 CDN 載入，設定在 `config.yml`。
+3. **登入**：Decap 把使用者送去 `oauth-proxy`（`/auth`）→ GitHub 授權 → 回到 `/callback`，
+   中繼站拿 client secret 換 access token，再用 `postMessage` 丟回後台視窗。secret 只存在 fly 的 secrets 裡。
+
+### 重新部署中繼站
 
 ```bash
 cd oauth-proxy
-fly apps create peicheng-decap-oauth        # 名稱要跟 fly.toml 對得上
-fly secrets set GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy \
-                ALLOWED_ORIGIN=https://peicheng0413.github.io
 fly deploy
 ```
 
-`ALLOWED_ORIGIN` 是安全閥：設了之後，只有這個網站拿得到 token。
+secrets（`GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` / `ALLOWED_ORIGIN`）已經設好，
+`fly secrets list` 可以確認。`ALLOWED_ORIGIN` 是安全閥：只有這個網站拿得到 token。
 
-完成後打開 `/admin/`，用 GitHub 登入就能編輯內容，存檔直接 commit 進 main，Actions 接手重建，約一分鐘後線上就更新了。
+GitHub OAuth App 的設定（若要重建）：
+
+| 欄位 | 值 |
+|---|---|
+| Homepage URL | `https://peicheng0413.github.io/hugo-decap-demo/` |
+| Authorization callback URL | `https://peicheng-decap-oauth.fly.dev/callback` |
 
 > 換帳號或換 repo 名稱時要一起改的地方：`config/_default/hugo.toml` 的 `baseURL`、
-> `static/admin/config.yml` 的 `repo` 與 `base_url`、`oauth-proxy/fly.toml` 的 `app`。
+> `static/admin/config.yml` 的 `repo` 與 `base_url`、`oauth-proxy/fly.toml` 的 `app`，
+> 以及 OAuth App 的兩個網址。
 > 線上的 baseURL 其實是 Actions 的 `configure-pages` 帶入的，本機那個值只影響你自己建置的結果。
 
 ## 內容結構
