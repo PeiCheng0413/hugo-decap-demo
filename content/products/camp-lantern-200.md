@@ -11,13 +11,13 @@ heroHeading: 充電式露營燈
 heroSubHeading: 中通通通通通通通竿
 specs:
   - name: 材質
-    value: 鋁合金＋PC 燈罩
+    value: 碳纖維
   - name: 尺寸
-    value: 直徑 7.5 cm / 高 12 cm
+    value: 8尺
   - name: 重量
     value: 310 g
   - name: 保固
-    value: 一年
+    value: "6個月 "
 images:
   - images/uploads/product-04.jpg
   - images/uploads/product-04-b.jpg
