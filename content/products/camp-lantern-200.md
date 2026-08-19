@@ -1,12 +1,10 @@
 ---
-title: 充電式露營燈
-date: 2026-08-18T10:00:00+08:00
-draft: false
 product: true
-weight: 4
+title: "123123"
 sku: LM-200
 price: 1980
 category: 照明
+weight: 4
 thumbnail: images/uploads/product-04.jpg
 heroBackground: images/uploads/product-04.jpg
 heroHeading: 充電式露營燈
@@ -23,6 +21,8 @@ specs:
 images:
   - images/uploads/product-04.jpg
   - images/uploads/product-04-b.jpg
+date: 2026-08-18T10:00:00+08:00
+draft: false
 ---
 
 無段調光，最低亮度可撐 40 小時。支援 USB-C 雙向充電，緊急時可以反過來幫手機補電。
