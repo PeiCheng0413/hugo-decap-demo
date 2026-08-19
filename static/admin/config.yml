@@ -3,11 +3,11 @@
 
 backend:
   name: github
-  repo: PeiCheng0413/hugo-decap-demo   # ← 換成你自己的 GitHub 帳號/repo
+  repo: PeiCheng0413/hugo-decap-demo
   branch: main
   # OAuth 中繼站：GitHub 不接受純前端登入，必須有一個後端幫忙換 token。
-  # oauth-proxy/ 目錄裡有現成的 Cloudflare Worker，部署完把網址填在這裡。
-  base_url: https://decap-oauth.example.workers.dev   # ← 換成你的 Worker 網址
+  # oauth-proxy/ 是那個後端（Go，部署到 fly.io），部署完網址就是下面這個。
+  base_url: https://peicheng-decap-oauth.fly.dev
   auth_endpoint: auth
 
 # 本機測試用：跑 `npx decap-server` 之後，/admin 會改走本機、不需要登入 GitHub。

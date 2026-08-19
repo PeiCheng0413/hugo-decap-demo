@@ -9,3 +9,6 @@
 # Cloudflare Worker
 /oauth-proxy/node_modules/
 /oauth-proxy/.wrangler/
+
+# Go
+/oauth-proxy/oauth-proxy

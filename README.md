@@ -21,7 +21,7 @@
 - **Hugo extended 0.165**（本機實測版本，最低需求 0.128）— 零 node 依賴，主題的 SCSS 由 Hugo 自己編譯。
 - **主題：[Hugo Hero](https://github.com/zerostaticthemes/hugo-hero-theme)**（Zerostatic，MIT 授權），直接 vendored 在 `themes/` 底下沒有用 submodule，CI 不會漏抓。
 - **Decap CMS 3.x**，從 CDN 載入，沒有任何前端建置流程。
-- **GitHub Pages + Actions** 部署。
+- **GitHub Pages + Actions** 部署；OAuth 中繼站是一支 Go 程式，跑在 fly.io。
 
 ## 本機開發
 
@@ -39,39 +39,45 @@ hugo server
 
 `static/admin/config.yml` 裡的 `local_backend: true` 就是打開這個模式用的。
 
-## 上線步驟（三件事）
+## 上線狀態
 
-### 1. 推上 GitHub 並開啟 Pages
+- 網站：<https://peicheng0413.github.io/hugo-decap-demo/> ← 已上線，push 到 main 就自動重建
+- 後台：<https://peicheng0413.github.io/hugo-decap-demo/admin/> ← 要能登入，還差下面兩步
 
-repo 設定 → Pages → Source 選 **GitHub Actions**。推上 main 之後 `.github/workflows/deploy.yml` 會自動建置發布。
-網址會是 `https://<你的帳號>.github.io/<repo 名>/`。
+### 還沒完成的兩步（讓 /admin 可以用 GitHub 登入）
 
-> 如果 repo 名稱不是 `hugo-decap-demo`，記得改 `config/_default/hugo.toml` 的 `baseURL`
-> ——不過線上其實是由 Actions 的 `configure-pages` 帶入正確的 baseURL，本機那個值只影響你自己建置的結果。
+**1. 建 GitHub OAuth App**
 
-### 2. 建一個 GitHub OAuth App
+Settings → Developer settings → OAuth Apps → New OAuth App，填：
 
-Settings → Developer settings → OAuth Apps → New OAuth App：
+| 欄位 | 值 |
+|---|---|
+| Application name | 隨便，例如 `Decap CMS - hugo-decap-demo` |
+| Homepage URL | `https://peicheng0413.github.io/hugo-decap-demo/` |
+| Authorization callback URL | `https://peicheng-decap-oauth.fly.dev/callback` |
 
-- **Homepage URL**：`https://<你的帳號>.github.io/<repo 名>/`
-- **Authorization callback URL**：`https://decap-oauth.<你的帳號>.workers.dev/callback`
+建完按 **Generate a new client secret**，client ID 與 secret 留著下一步用。
 
-### 3. 部署 OAuth 中繼站
+**2. 部署 OAuth 中繼站到 fly.io**
 
-Decap 用 GitHub 帳號登入時，最後一步要拿 client secret 去換 token，這件事不能在瀏覽器做，所以需要一個小後端。
-`oauth-proxy/` 裡有現成的 Cloudflare Worker（免費方案就夠）：
+Decap 用 GitHub 登入時，最後一步要拿 client secret 去換 token，這不能在瀏覽器做，所以需要一個小後端。
+`oauth-proxy/` 就是它：Go 寫的單一 binary，沒有資料庫，閒置會自動關機（`min_machines_running = 0`）。
 
 ```bash
 cd oauth-proxy
-npx wrangler deploy
-npx wrangler secret put GITHUB_CLIENT_ID
-npx wrangler secret put GITHUB_CLIENT_SECRET
-npx wrangler secret put ALLOWED_ORIGIN     # 選用，例如 https://<你的帳號>.github.io
+fly apps create peicheng-decap-oauth        # 名稱要跟 fly.toml 對得上
+fly secrets set GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy \
+                ALLOWED_ORIGIN=https://peicheng0413.github.io
+fly deploy
 ```
 
-最後把 Worker 網址填回 `static/admin/config.yml` 的 `base_url`，並把 `repo:` 改成你自己的 `帳號/repo`。
+`ALLOWED_ORIGIN` 是安全閥：設了之後，只有這個網站拿得到 token。
 
-完成後打開 `/admin/`，用 GitHub 登入就能編輯內容，存檔會直接 commit 進 main，Actions 接手重建。
+完成後打開 `/admin/`，用 GitHub 登入就能編輯內容，存檔直接 commit 進 main，Actions 接手重建，約一分鐘後線上就更新了。
+
+> 換帳號或換 repo 名稱時要一起改的地方：`config/_default/hugo.toml` 的 `baseURL`、
+> `static/admin/config.yml` 的 `repo` 與 `base_url`、`oauth-proxy/fly.toml` 的 `app`。
+> 線上的 baseURL 其實是 Actions 的 `configure-pages` 帶入的，本機那個值只影響你自己建置的結果。
 
 ## 內容結構
 
