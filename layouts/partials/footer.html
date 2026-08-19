@@ -1,0 +1,17 @@
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="footer-inner">
+          <ul class="footer-menu">
+            <li><a href="{{ "" | relURL }}">首頁</a></li>
+            <li><a href="{{ "products/" | relURL }}">產品</a></li>
+            <li><a href="{{ "contact/" | relURL }}">聯絡</a></li>
+            <li><a href="{{ "admin/" | relURL }}">內容後台</a></li>
+            <li class="copyright">© {{ now.Format "2006" }} {{ .Site.Title }}（示範站，非真實品牌）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

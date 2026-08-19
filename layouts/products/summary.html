@@ -1,0 +1,17 @@
+<div class="work work-summary">
+  {{ with .Params.thumbnail }}
+  <div class="work-image">
+    <a href="{{ $.RelPermalink }}"><img src="{{ . | relURL }}" alt="{{ $.Title }}" /></a>
+  </div>
+  {{ end }}
+  <div class="work-content">
+    <h2 class="work-title">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </h2>
+    <p class="product-meta">
+      {{ with .Params.category }}<span class="product-category">{{ . }}</span>{{ end }}
+      {{ with .Params.price }}<span class="product-price">NT$ {{ lang.FormatNumber 0 . }}</span>{{ end }}
+    </p>
+    {{ .Content | truncate 120 "..." | plainify }}
+  </div>
+</div>

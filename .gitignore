@@ -1,0 +1,11 @@
+# Hugo 產出與快取
+/public/
+/resources/_gen/
+.hugo_build.lock
+
+# macOS
+.DS_Store
+
+# Cloudflare Worker
+/oauth-proxy/node_modules/
+/oauth-proxy/.wrangler/

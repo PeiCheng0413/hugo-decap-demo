@@ -1,0 +1,19 @@
+[[main]]
+  name = '產品'
+  url = '/products/'
+  weight = 1
+
+[[main]]
+  name = '服務'
+  url = '/services/'
+  weight = 2
+
+[[main]]
+  name = '關於我們'
+  url = '/about/'
+  weight = 3
+
+[[main]]
+  name = '聯絡'
+  url = '/contact/'
+  weight = 4

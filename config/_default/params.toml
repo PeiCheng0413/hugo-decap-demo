@@ -1,0 +1,21 @@
+google_analytics_id = ''
+
+[logo]
+  mobile = 'images/logo-mobile.svg'
+  mobile_height = '36px'
+  mobile_width = '36px'
+  desktop = 'images/logo.svg'
+  desktop_height = '29px'
+  desktop_width = '217px'
+  alt = '山戶 SANTO'
+
+[homepage_meta_tags]
+  meta_description = '山戶 SANTO 是一個 Hugo + Decap CMS 的功能示範站，內容全為假資料。'
+  meta_og_title = '山戶 SANTO｜產品展示示範站'
+  meta_og_type = 'website'
+  meta_og_url = 'https://peicheng0413.github.io/hugo-decap-demo/'
+  meta_og_image = 'https://peicheng0413.github.io/hugo-decap-demo/images/uploads/hero-home.jpg'
+  meta_og_description = 'Hugo + Decap CMS 功能示範：產品集合、圖片上傳、選單與站台設定都能在 /admin 編輯。'
+  meta_twitter_card = 'summary'
+  meta_twitter_site = ''
+  meta_twitter_creator = ''

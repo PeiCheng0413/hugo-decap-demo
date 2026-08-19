@@ -1,0 +1,221 @@
+# Decap CMS 設定檔
+# 文件：https://decapcms.org/docs/configuration-options/
+
+backend:
+  name: github
+  repo: PeiCheng0413/hugo-decap-demo   # ← 換成你自己的 GitHub 帳號/repo
+  branch: main
+  # OAuth 中繼站：GitHub 不接受純前端登入，必須有一個後端幫忙換 token。
+  # oauth-proxy/ 目錄裡有現成的 Cloudflare Worker，部署完把網址填在這裡。
+  base_url: https://decap-oauth.example.workers.dev   # ← 換成你的 Worker 網址
+  auth_endpoint: auth
+
+# 本機測試用：跑 `npx decap-server` 之後，/admin 會改走本機、不需要登入 GitHub。
+local_backend: true
+
+# 上傳的圖片放哪（給 Hugo 讀的實體路徑 / 給網頁用的網址路徑）
+media_folder: static/images/uploads
+public_folder: images/uploads
+
+# 檔名一律轉成英數，避免中文檔名進 git
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  # ────────────────────────────── 產品
+  - name: products
+    label: 產品
+    label_singular: 產品
+    description: 產品展示的主要內容。新增後會在 /products/ 列表與首頁精選出現。
+    folder: content/products
+    create: true
+    slug: '{{fields.sku}}'
+    preview_path: products/{{slug}}
+    sortable_fields: [weight, price, title]
+    # content/products/_index.md 是列表頁，不是產品；靠這個標記把它排除在集合外
+    filter: { field: product, value: true }
+    fields:
+      - { name: product, widget: hidden, default: true }
+      - { name: title, label: 產品名稱, widget: string }
+      - { name: sku, label: 型號, widget: string, hint: 也會拿來當檔名與網址，例如 FT-01 }
+      - { name: price, label: 價格（新台幣）, widget: number, value_type: int, min: 0 }
+      - name: category
+        label: 分類
+        widget: select
+        options: [桌椅, 炊具, 收納, 照明, 寢具]
+      - { name: weight, label: 排序（數字小的排前面）, widget: number, value_type: int, default: 10 }
+      - { name: thumbnail, label: 列表縮圖, widget: image }
+      - { name: heroBackground, label: 內頁主視覺, widget: image, required: false }
+      - { name: heroHeading, label: 內頁大標, widget: string, required: false }
+      - { name: heroSubHeading, label: 內頁副標, widget: string, required: false }
+      - name: specs
+        label: 規格
+        label_singular: 規格項目
+        widget: list
+        required: false
+        collapsed: false
+        fields:
+          - { name: name, label: 項目, widget: string }
+          - { name: value, label: 內容, widget: string }
+      - name: images
+        label: 更多照片
+        widget: list
+        required: false
+        field: { name: image, label: 照片, widget: image }
+      - { name: body, label: 產品說明, widget: markdown }
+      - { name: date, label: 建立日期, widget: datetime, format: 'YYYY-MM-DDTHH:mm:ssZ' }
+      - { name: draft, label: 草稿（勾起來就不會發布）, widget: boolean, default: false }
+
+  # ────────────────────────────── 服務
+  - name: services
+    label: 服務
+    label_singular: 服務項目
+    description: 首頁中段與 /services/ 會用到。勾「顯示在首頁」才會出現在首頁。
+    folder: content/services
+    create: true
+    slug: '{{slug}}'
+    # 同上，把 content/services/_index.md 排除
+    filter: { field: service, value: true }
+    fields:
+      - { name: service, widget: hidden, default: true }
+      - { name: title, label: 服務名稱, widget: string }
+      - { name: featured, label: 顯示在首頁, widget: boolean, default: true }
+      - { name: weight, label: 排序, widget: number, value_type: int, default: 10 }
+      - { name: icon, label: 小圖（首頁用，建議正方形）, widget: image }
+      - { name: heroHeading, label: 內頁大標, widget: string, required: false }
+      - { name: heroSubHeading, label: 內頁副標, widget: string, required: false }
+      - { name: heroBackground, label: 內頁主視覺, widget: image, required: false }
+      - { name: body, label: 內容, widget: markdown }
+      - { name: date, label: 建立日期, widget: datetime, format: 'YYYY-MM-DDTHH:mm:ssZ' }
+      - { name: draft, label: 草稿, widget: boolean, default: false }
+
+  # ────────────────────────────── 固定頁面
+  - name: pages
+    label: 頁面
+    description: 首頁、列表頁與靜態頁的文案。這些頁面不能新增或刪除，只能編輯。
+    editor: { preview: false }
+    files:
+      - name: home
+        label: 首頁（主視覺）
+        file: content/_index.md
+        fields:
+          - { name: title, label: 頁面標題, widget: hidden, default: 首頁 }
+          - { name: heroHeading, label: 大標, widget: string }
+          - { name: heroSubHeading, label: 副標, widget: string }
+          - { name: heroBackground, label: 全螢幕背景圖, widget: image }
+
+      - name: home_strip_1
+        label: 首頁區塊一
+        file: content/homepage/work.md
+        fields:
+          - { name: title, label: 標題, widget: string }
+          - { name: weight, label: 排序, widget: hidden, default: 1 }
+          - { name: background, label: 背景圖, widget: image }
+          - { name: button, label: 按鈕文字, widget: string, required: false }
+          - { name: buttonLink, label: 按鈕連結（相對路徑，例如 products）, widget: string, required: false }
+          - { name: body, label: 內文, widget: markdown }
+
+      - name: home_strip_2
+        label: 首頁區塊二
+        file: content/homepage/about.md
+        fields:
+          - { name: title, label: 標題, widget: string }
+          - { name: weight, label: 排序, widget: hidden, default: 2 }
+          - { name: background, label: 背景圖, widget: image }
+          - { name: button, label: 按鈕文字, widget: string, required: false }
+          - { name: buttonLink, label: 按鈕連結, widget: string, required: false }
+          - { name: body, label: 內文, widget: markdown }
+
+      - name: products_index
+        label: 產品列表頁
+        file: content/products/_index.md
+        fields:
+          - { name: title, label: 頁面標題, widget: string }
+          - { name: heroHeading, label: 大標, widget: string }
+          - { name: heroSubHeading, label: 副標, widget: string }
+          - { name: heroBackground, label: 主視覺, widget: image }
+          - { name: body, label: 列表上方說明, widget: markdown, required: false }
+
+      - name: services_index
+        label: 服務列表頁
+        file: content/services/_index.md
+        fields:
+          - { name: title, label: 頁面標題, widget: string }
+          - { name: heroHeading, label: 大標, widget: string }
+          - { name: heroSubHeading, label: 副標, widget: string }
+          - { name: heroBackground, label: 主視覺, widget: image }
+
+      - name: about
+        label: 關於我們
+        file: content/pages/about/index.md
+        fields:
+          - { name: title, label: 頁面標題, widget: string }
+          - { name: heroHeading, label: 大標, widget: string }
+          - { name: heroSubHeading, label: 副標, widget: string }
+          - { name: heroBackground, label: 主視覺, widget: image }
+          - { name: body, label: 內文, widget: markdown }
+
+      - name: contact
+        label: 聯絡我們
+        file: content/contact/_index.md
+        fields:
+          - { name: title, label: 頁面標題, widget: string }
+          - { name: body, label: 內文, widget: markdown }
+
+  # ────────────────────────────── 站台設定
+  - name: settings
+    label: 站台設定
+    description: 導覽選單與 SEO 參數。改這裡會直接改 config/_default 下的設定檔。
+    editor: { preview: false }
+    files:
+      - name: menu
+        label: 導覽選單
+        file: config/_default/menus.toml
+        fields:
+          - name: main
+            label: 主選單
+            label_singular: 選單項目
+            widget: list
+            collapsed: false
+            fields:
+              - { name: name, label: 顯示文字, widget: string }
+              - { name: url, label: 連結（例如 /products/）, widget: string }
+              - { name: weight, label: 排序, widget: number, value_type: int }
+
+      - name: contact
+        label: 聯絡資訊（頁尾）
+        file: data/contact.yaml
+        fields:
+          - { name: phone, label: 電話, widget: string }
+          - { name: email, label: 電子郵件, widget: string }
+
+      - name: params
+        label: 站台參數
+        file: config/_default/params.toml
+        fields:
+          - { name: google_analytics_id, label: GA 追蹤碼, widget: string, required: false }
+          - name: logo
+            label: Logo
+            widget: object
+            fields:
+              - { name: mobile, label: 手機版 logo 路徑, widget: string }
+              - { name: mobile_height, label: 手機版高, widget: string }
+              - { name: mobile_width, label: 手機版寬, widget: string }
+              - { name: desktop, label: 桌機版 logo 路徑, widget: string }
+              - { name: desktop_height, label: 桌機版高, widget: string }
+              - { name: desktop_width, label: 桌機版寬, widget: string }
+              - { name: alt, label: 替代文字, widget: string }
+          - name: homepage_meta_tags
+            label: 首頁 SEO / 分享設定
+            widget: object
+            fields:
+              - { name: meta_description, label: 網頁描述, widget: text }
+              - { name: meta_og_title, label: 分享標題, widget: string }
+              - { name: meta_og_type, label: og:type, widget: string, default: website }
+              - { name: meta_og_url, label: 網站網址, widget: string }
+              - { name: meta_og_image, label: 分享縮圖網址, widget: string }
+              - { name: meta_og_description, label: 分享描述, widget: text }
+              - { name: meta_twitter_card, label: Twitter card, widget: string, required: false }
+              - { name: meta_twitter_site, label: Twitter 帳號, widget: string, required: false }
+              - { name: meta_twitter_creator, label: Twitter 作者, widget: string, required: false }

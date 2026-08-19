@@ -1,0 +1,24 @@
+baseURL = 'https://peicheng0413.github.io/hugo-decap-demo/'
+title = '山戶 SANTO'
+locale = 'zh-TW'
+theme = 'hugo-hero-theme'
+enableRobotsTXT = true
+
+# 設定拆成 config/_default/ 三個檔：
+#   hugo.toml  ← 建置相關，CMS 不碰
+#   params.toml ← 站台參數，CMS 可改
+#   menus.toml  ← 導覽選單，CMS 可改
+# 這樣 Decap 重寫檔案時不會動到建置設定。
+
+[module]
+  [module.hugoVersion]
+    extended = true
+    min = '0.128.0'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[permalinks]
+  pages = '/:filename/'

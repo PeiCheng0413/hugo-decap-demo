@@ -1,0 +1,52 @@
+name: 建置並部署到 GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時只跑一個部署；CMS 連續存檔時，後面的會取消前面的
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.165.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安裝 Hugo（extended，主題要編 SCSS）
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
+
+      - name: 設定 Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      # baseURL 由 configure-pages 帶入，本機 hugo.toml 裡那個值只影響本機建置
+      - name: 建置
+        run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

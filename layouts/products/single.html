@@ -1,0 +1,47 @@
+{{ define "header_css" }}{{ end }}
+{{ define "body_classes" }}page-work-single{{ end }}
+{{ define "header_classes" }}{{ end }}
+
+{{ define "main" }}
+{{ partial "hero-image-setheight.html" (dict "background" .Params.heroBackground "heading" .Params.heroHeading "subheading" .Params.heroSubHeading "section" "產品" "content" .) }}
+<div class="container pt-4 pt-md-10 pb-4 pb-md-10">
+  <div class="row justify-content-start">
+    <div class="col-12 col-md-8">
+      <div class="work work-single">
+        <p class="product-meta">
+          {{ with .Params.category }}<span class="product-category">{{ . }}</span>{{ end }}
+          {{ with .Params.sku }}<span class="product-sku">型號 {{ . }}</span>{{ end }}
+        </p>
+        {{ with .Params.price }}<p class="product-price product-price-lg">NT$ {{ lang.FormatNumber 0 . }}</p>{{ end }}
+        <div class="content">{{ .Content }}</div>
+      </div>
+    </div>
+
+    {{ with .Params.specs }}
+    <div class="col-12 col-md-4">
+      <table class="product-specs">
+        <caption>規格</caption>
+        <tbody>
+        {{ range . }}
+          <tr><th scope="row">{{ .name }}</th><td>{{ .value }}</td></tr>
+        {{ end }}
+        </tbody>
+      </table>
+    </div>
+    {{ end }}
+
+    {{ with .Params.images }}
+    <div class="col-12 pt-4 pt-md-10">
+      <h2 class="mb-2">更多照片</h2>
+      <div class="masonry">
+        {{ range . }}
+        <div class="work-image item"><img src="{{ . | relURL }}" alt="" /></div>
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ define "footer_js" }}{{ end }}

@@ -1,0 +1,126 @@
+// 中文字型 fallback：主題原本只指定英文字型，中文會掉到系統預設
+body,
+.navigation .menu-item a,
+.button {
+  font-family: 'Open Sans', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+// 產品卡與內頁的價格、分類、型號
+.product-meta {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+
+  span + span {
+    margin-left: 0.75rem;
+  }
+}
+
+.product-category {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid $primary;
+  border-radius: 999px;
+  color: $primary;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.product-price {
+  color: $primary;
+  font-weight: 700;
+}
+
+.product-price-lg {
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+}
+
+// 規格表
+.product-specs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  caption {
+    caption-side: top;
+    padding-bottom: 0.5rem;
+    color: $primary;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: left;
+  }
+
+  th, td {
+    padding: 0.6rem 0.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+
+  th {
+    width: 6em;
+    color: #6b7280;
+    font-weight: 400;
+    text-align: left;
+  }
+}
+
+// 首頁精選產品區塊
+.featured-products {
+  .product-card {
+    display: block;
+    margin-bottom: 2rem;
+    color: inherit;
+    text-decoration: none;
+
+    img {
+      width: 100%;
+      height: auto;
+      margin-bottom: 0.75rem;
+    }
+
+    h3 {
+      margin-bottom: 0.25rem;
+      font-size: 1.25rem;
+    }
+
+    &:hover h3 {
+      color: $primary;
+    }
+  }
+}
+
+// 示範站標示
+.demo-banner {
+  padding: 0.6rem 1rem;
+  background: #1f2937;
+  color: #f9fafb;
+  font-size: 0.85rem;
+  text-align: center;
+
+  a {
+    color: #93c5fd;
+  }
+}
+
+// 首頁橫幅：主題原本用主色寫標題，壓在照片上對比不夠，改成白字加深遮罩
+.strip {
+  &.bg-overlay:before {
+    background: rgba(17, 24, 39, 0.55);
+  }
+
+  h2,
+  h2.text-primary {
+    // Bootstrap 的 .text-primary 帶 !important，這裡必須跟上
+    color: #ffffff !important;
+  }
+
+  p, .content {
+    color: rgba(255, 255, 255, 0.92);
+  }
+}
