@@ -79,6 +79,23 @@ GitHub OAuth App 的設定（若要重建）：
 > 以及 OAuth App 的兩個網址。
 > 線上的 baseURL 其實是 Actions 的 `configure-pages` 帶入的，本機那個值只影響你自己建置的結果。
 
+## 日後搬到 Cloudflare Pages
+
+已決定之後會從 GitHub Pages 搬到 Cloudflare Pages（原因：GitHub Pages 條款不允許拿來跑商業交易類網站、
+台灣連線速度、以及網址回到根路徑就沒有子路徑問題）。搬的時候要一起改這五處：
+
+1. **Cloudflare 後台**：連 GitHub repo，Framework 選 Hugo，build 指令 `hugo --minify`，輸出目錄 `public`，
+   環境變數 `HUGO_VERSION=0.165.0`（要 extended，Cloudflare 的 Hugo 預設就是 extended 版）。
+2. **`config/_default/hugo.toml`**：`baseURL` 改成新網址（根路徑，例如 `https://xxx.pages.dev/`）。
+3. **圖片路徑可以改回開頭帶 `/`**：子路徑問題消失後，`static/admin/config.yml` 的 `public_folder`
+   可以改回 `/images/uploads`（不改也能運作，維持現狀最省事）。
+4. **`static/admin/config.yml`**：`repo` 不用動；若換 repo 名才要改。
+5. **GitHub OAuth App 與 `ALLOWED_ORIGIN`**：Homepage URL 換成新網址，
+   並跑 `fly secrets set ALLOWED_ORIGIN=https://新網址`（否則後台登入會拿不到 token）。
+   callback URL 不用改，它指向 fly，不是指向網站。
+
+`.github/workflows/deploy.yml` 屆時可以刪掉，或留著讓兩邊並存（GitHub Pages 當備援）。
+
 ## 內容結構
 
 ```
