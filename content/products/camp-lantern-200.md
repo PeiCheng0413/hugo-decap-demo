@@ -1,6 +1,6 @@
 ---
 product: true
-title: 漁夫中通花軟竿
+title: 漁夫中通竿
 sku: "中通竿 "
 price: 2500
 category: 桌椅
